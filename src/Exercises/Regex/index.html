@@ -2,17 +2,77 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title><!-- TODO: Create a title --></title>
+    <link href="https://font.vortech.io/MuseoSansRounded.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
+    <title>Moneycounter</title>
+    <style>
+        * {
+            font-family : Arial, sans-serif;
+            font-size   : 10pt;
+        }
+
+        h1 {
+            font-family : "Museo Sans Rounded", sans-serif;
+            font-weight : 800;
+        }
+
+        label#textbox-heading {
+            font-family : "Museo Sans Rounded", sans-serif;
+            font-weight : 500;
+            font-size   : 15pt;
+        }
+
+        div.main {
+            text-align : center;
+        }
+
+        button#submit-form {
+            margin-top : 20px;
+            width      : 150px;
+            height     : 40px;
+        }
+    </style>
 </head>
 <body>
-<h2> Working with regex (short form for regular expressions</h2>
-<p>Purpose of this lesson is to see how regular expressions can be used to validate input and find general patterns within a given string</p>
-<p>Input is sent with a form of this document to a php file, where the string is processed</p>
+<div class="main">
+    <h1> Working with regular expressions</h1>
+    <p>Purpose of this lesson is to see how regular expressions can be used to validate input and find general patterns
+        within a given string</p>
+    <p>Input is sent with a form of this document to a php file, where the string is processed</p>
+
+    <form action="moneycounter.php" method="post">
+        <label id="textbox-heading" for="money">Your Moneystring:</label><br><br>
+        <textarea id="money" name="moneystring" rows="25" cols="50">50,30 EUR is valid at the begin of the text.
+This 10,00 EUR	 are also valid.
+(with a tabulator after EUR)
+23,30 EUR, 3 EUR, are valid.
+Also valid 0,70 EUR or 12,- EUR.
+Invalid are:
+03,17 EUR and 03,17 EUR (leading 0),
+ ,56 EUR (no digit before comma),
+ 16,0056 EUR (more than 2 digits after comma),
+ a10,00 EUR (no blank before decimal),
+11.00 EUR (decimal separator is not a point),
+7EUR (no blank between digits and EUR),
+13,17 eur (EUR should be written in UPPERCASE)
+and 17,7 EUR (exactly 2 digits after comma).
+15,89 EURhas no blank after EUR.
+Total sum of valid amounts is 1000,00.
+A valid amount is identified by
+" EUR " or " EUR," or " EUR."
+or " EUR" at the end of the text
+or before a new line "\n"
+after a valid decimal number(\b).
+Valid at the end of the text is 900,70 EUR
+</textarea><br>
+        <button id="submit-form" type="submit">Validate</button>
+    </form>
+</div>
+</body>
+</html>
+
 <!-- TODO: Create a HTML <form> with a <textarea>, a <label> and a <button> element for entering  and submitting long text -->
 <!-- TODO: Use the necessary <form> attributes to call a PHP file moneycounter.php where the text is processed and analyzed for amounts of money with a POST-Request -->
 <!-- TODO: Use the necessary attributes for <textarea>,  for input to appear in $_POST and connect <textarea> with <label>. Format the size of the <textarea> with the attributes "rows" and "cols" to see whole textsnippet -->
 <!-- TODO: Use the text snippet in teststring.txt to test your regex. It shows all valid and invalid test cases and should sum up to 1000 EUR -->
 <!-- Optional: Need a more challenging Regex? Use challenge.txt for a more complex example, also summing up to 1000 EUR -->
-
-</body>
-</html>
