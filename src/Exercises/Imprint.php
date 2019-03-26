@@ -1,4 +1,5 @@
 <?php
+
 namespace Exercises;
 
 use Twig\Environment;
@@ -15,8 +16,10 @@ use Twig\Loader\FilesystemLoader;
  * @package phpintro
  * @version 2017
  */
+
 final class Imprint
 {
+
     /**
      * The name of the view (the template file that is to be rendered).
      *
@@ -62,21 +65,22 @@ final class Imprint
     /**
      * Imprint constructor.
      *
-     * Creates a new Twig Object and sets default templates and compiled templates directories
+     * Creates a new Twig Object and sets default templates and compiled
+     * templates directories
      */
     public function __construct()
     {
-        $this->templateName = "ImprintMain.html.twig";
+        $this->templateName = "imprintMain.html.twig";
         $this->templateDirectory = "../templates";
         $this->templateCacheDirectory = "../templates_c";
 
         $this->loader = new FilesystemLoader($this->templateDirectory);
         $this->twig = new Environment(
-            $this->loader,
-            [
+          $this->loader,
+          [
             "cache" => $this->templateCacheDirectory,
-            "auto_reload" => true
-            ]
+            "auto_reload" => true,
+          ]
         );
         $this->twig->addGlobal("_server", $_SERVER);
     }
@@ -85,16 +89,16 @@ final class Imprint
     {
         // TODO Replace the text in $this->imprint with a imprint of your own using valid HTML5 syntax
         // TODO Use string operator .= or heredoc for concating the lines
-        // For a small site the imprint has to contain
-        // name/company name
-        // purpose of the site
-        // address of the owner of the site
-
-        //##%%
-        $this->imprint = "<p> Place the requested Imprint here </p>";
+        $this->imprint = <<<EOT
+<p>Matthias Fischbacher - <b>CTO @ CoolCompany</b></p>
+<p>Public website to see how cool I am.</p> 
+<p>Musterstraße 1337</p> 
+<p>0000 Musterstadt</p> 
+<p>AUSTRIA</p>
+EOT;
         //#%#%
         //%%imprint/show
-        $templateParameters['imprint'] =  $this->imprint;
+        $templateParameters['imprint'] = $this->imprint;
         try {
             $this->twig->display($this->templateName, $templateParameters);
         } catch (LoaderError $e) {

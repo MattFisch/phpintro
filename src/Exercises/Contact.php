@@ -1,4 +1,5 @@
 <?php
+
 namespace Exercises;
 
 use Fhooe\NormForm\Core\AbstractNormForm;
@@ -14,8 +15,10 @@ use Utilities\Utilities;
  * @package phpintro
  * @version 2017
  */
+
 final class Contact extends AbstractNormForm
 {
+
     /**
      * constants for HTML attributes : <input name='pname' id='pname' ... >,
      * <label for='pname' ... >, keys for $_POST[self::PNAME]..
@@ -25,10 +28,13 @@ final class Contact extends AbstractNormForm
      * @var string EMAIL Key for $_POST-Array
      * @var string PRIORITY Key for $_POST-Array
      */
-    const SUBJECT = "subject";
-    const REQUEST = "request";
-    const EMAIL = "email";
-    const PRIORITY = "priority";
+    private const SUBJECT = "subject";
+
+    private const REQUEST = "request";
+
+    private const EMAIL = "email";
+
+    private const PRIORITY = "priority";
 
     /**
      * Contact Constructor.
@@ -41,15 +47,15 @@ final class Contact extends AbstractNormForm
     {
         // TODO Look into htdocs/templates/contactForm.html.twig and complete the template
         $view = new View(
-            "contactMain.html.twig",
-            "../templates",
-            "../templates_c",
-            [
-                new PostParameter(Contact::SUBJECT),
-                new PostParameter(Contact::REQUEST),
-                new PostParameter(Contact::EMAIL),
-                new PostParameter(Contact::PRIORITY)
-            ]
+          "contactMain.html.twig",
+          "../templates",
+          "../templates_c",
+          [
+            new PostParameter(Contact::SUBJECT),
+            new PostParameter(Contact::REQUEST),
+            new PostParameter(Contact::EMAIL),
+            new PostParameter(Contact::PRIORITY),
+          ]
         );
         parent::__construct($view);
     }
@@ -57,7 +63,8 @@ final class Contact extends AbstractNormForm
     /**
      * Validates the input after sending the form.
      *
-     * Examples for REGEX to validate input can be found in src/Utilities/Utilities.php
+     * Examples for REGEX to validate input can be found in
+     * src/Utilities/Utilities.php
      *
      * Abstract methods of class AbstractNormForm have to be implemented here
      *
@@ -72,7 +79,8 @@ final class Contact extends AbstractNormForm
         // TODO to match the requirements of templates/contactMain.html.twig
         //%%contact/isValid
         //TODO keep the next two lines
-        $this->currentView->setParameter(new GenericParameter("errorMessages", $this->errorMessages));
+        $this->currentView->setParameter(new GenericParameter("errorMessages",
+          $this->errorMessages));
         return (count($this->errorMessages) === 0);
     }
 
