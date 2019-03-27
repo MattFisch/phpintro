@@ -76,11 +76,11 @@ final class Imprint
 
         $this->loader = new FilesystemLoader($this->templateDirectory);
         $this->twig = new Environment(
-          $this->loader,
-          [
-            "cache" => $this->templateCacheDirectory,
-            "auto_reload" => true,
-          ]
+            $this->loader,
+            [
+                "cache" => $this->templateCacheDirectory,
+                "auto_reload" => true,
+            ]
         );
         $this->twig->addGlobal("_server", $_SERVER);
     }
@@ -89,7 +89,8 @@ final class Imprint
     {
         // TODO Replace the text in $this->imprint with a imprint of your own using valid HTML5 syntax
         // TODO Use string operator .= or heredoc for concating the lines
-        $this->imprint = <<<EOT
+        $this->imprint
+            = <<<EOT
 <p>Matthias Fischbacher - <b>CTO @ CoolCompany</b></p>
 <p>Public website to see how cool I am.</p> 
 <p>Musterstraße 1337</p> 

@@ -47,15 +47,15 @@ final class Contact extends AbstractNormForm
     {
         // TODO Look into htdocs/templates/contactForm.html.twig and complete the template
         $view = new View(
-          "contactMain.html.twig",
-          "../templates",
-          "../templates_c",
-          [
-            new PostParameter(Contact::SUBJECT),
-            new PostParameter(Contact::REQUEST),
-            new PostParameter(Contact::EMAIL),
-            new PostParameter(Contact::PRIORITY),
-          ]
+            "contactMain.html.twig",
+            "../templates",
+            "../templates_c",
+            [
+                new PostParameter(Contact::SUBJECT),
+                new PostParameter(Contact::REQUEST),
+                new PostParameter(Contact::EMAIL),
+                new PostParameter(Contact::PRIORITY),
+            ]
         );
         parent::__construct($view);
     }
@@ -77,10 +77,28 @@ final class Contact extends AbstractNormForm
         // TODO Decide before you finish your work
         // TODO @see src/NormFormSkeleton/NormFormDemo.php and change the code,
         // TODO to match the requirements of templates/contactMain.html.twig
+        if ($this->isEmptyPostField(Contact::SUBJECT)) {
+            $this->errorMessages[Contact::SUBJECT] = "Subject is required.";
+        }
+
+        if ($this->isEmptyPostField(Contact::REQUEST)) {
+            $this->errorMessages[Contact::REQUEST] = "Request is required.";
+        }
+
+        if ($this->isEmptyPostField(Contact::EMAIL)) {
+            $this->errorMessages[Contact::EMAIL] = "Email is required.";
+        } elseif (!Utilities::isEmail($_POST[Contact::EMAIL])) {
+            $this->errorMessages[Contact::EMAIL] = "Email is invalid.";
+        }
+
+        if ($this->isEmptyPostField(Contact::PRIORITY)) {
+            $this->errorMessages[Contact::PRIORITY] = "Priority is required.";
+        }
+
         //%%contact/isValid
         //TODO keep the next two lines
         $this->currentView->setParameter(new GenericParameter("errorMessages",
-          $this->errorMessages));
+            $this->errorMessages));
         return (count($this->errorMessages) === 0);
     }
 
@@ -97,5 +115,12 @@ final class Contact extends AbstractNormForm
         // TODO Decide before you finish your work
         // TODO @see src/NormFormSkeleton/NormFormDemo.php
         //%%contact/business
+
+        $this->currentView->setParameter(new GenericParameter("result",
+            $_POST));
+
+        $this->statusMessage = "Processing successful!";
+        $this->currentView->setParameter(new GenericParameter("statusMessage",
+            $this->statusMessage));
     }
 }
