@@ -1,10 +1,12 @@
 <?php
+
 namespace Exercises;
 
 use Fhooe\NormForm\Core\AbstractNormForm;
 use Fhooe\NormForm\Parameter\GenericParameter;
 use Fhooe\NormForm\View\View;
 use FileAccess\FileAccess;
+use FileAccess\FileAccessException;
 use Utilities\Utilities;
 
 /**
@@ -21,6 +23,7 @@ use Utilities\Utilities;
  */
 final class Register extends AbstractNormForm
 {
+
     /**
      * @var string USERNAME Form field constant that defines how the form field for holding the username is called
      * (id/name).
@@ -75,6 +78,7 @@ final class Register extends AbstractNormForm
 
         // TODO: Create a FileAccess object and assign it to $this->fileAccess;
         // TODO: @see src/FAdemo.php for this
+        $this->fileAccess = new FileAccess();
 
         //%%Register/construct
     }
@@ -94,6 +98,33 @@ final class Register extends AbstractNormForm
         // TODO: You can either call this examples by Utilitis::method() or copy them to this class and adapt them
         // TODO: When copying, make the method private instead of public static
         // TODO: @see src/FAdemo.php for this
+        if ($this->isEmptyPostField(Register::USERNAME) || Utilities::isEmptyString($_POST[Register::USERNAME])) {
+            $this->errorMessages[Register::USERNAME] = "Username is required.";
+        } elseif (!$this->isUnique("username", $_POST[Register::USERNAME])) {
+            $this->errorMessages[Register::USERNAME] = "Username is already used.";
+        }
+
+        if ($this->isEmptyPostField(Register::EMAIL) || Utilities::isEmptyString($_POST[Register::EMAIL])) {
+            $this->errorMessages[Register::EMAIL] = "Email is required.";
+        } elseif (!Utilities::isEmail($_POST[Register::EMAIL])) {
+            $this->errorMessages[Register::EMAIL] = "Email is invalid.";
+        } elseif (!$this->isUnique("email", $_POST[Register::EMAIL])) {
+            $this->errorMessages[Register::EMAIL] = "Email is already used.";
+        }
+
+        if ($this->isEmptyPostField(Register::PASSWORD) || Utilities::isEmptyString($_POST[Register::PASSWORD])) {
+            $this->errorMessages[Register::PASSWORD] = "Password is required.";
+        } elseif (!Utilities::isPassword($_POST[Register::PASSWORD], 8, 12)) {
+            $this->errorMessages[Register::PASSWORD] = "Password is invalid (should be 8 to 12 characters long)";
+        }
+
+        if ($this->isEmptyPostField(Register::PASSWORD_RETYPE) || Utilities::isEmptyString($_POST[Register::PASSWORD_RETYPE])) {
+            $this->errorMessages[Register::PASSWORD_RETYPE] = "Password retype is required.";
+        } elseif (!Utilities::isPassword($_POST[Register::PASSWORD_RETYPE], 8, 12)) {
+            $this->errorMessages[Register::PASSWORD_RETYPE] = "Password retype is invalid (should be 8 to 12 characters long)";
+        } elseif (strcmp($_POST[Register::PASSWORD], $_POST[Register::PASSWORD_RETYPE]) !== 0) {
+            $this->errorMessages[Register::PASSWORD_RETYPE] = "Both passwords should be the same";
+        }
 
         //%%Register/isValid
 
@@ -120,16 +151,29 @@ final class Register extends AbstractNormForm
      * e-mail address are unique or already existing. Therefore the existing users are loaded and the array is searched
      * for the supplied value.
      *
-     * @param  string $name The name of the entry in the $_POST array.
+     * @param string $field
+     * @param string $value
+     *
      * @return bool Returns true if no match is found, otherwise false.
      */
-    private function isUnique(string $name): bool
+    private function isUnique(string $field, string $value): bool
     {
         // TODO: Check if the provided username or email is unique (meaning not already in the data).
         // TODO: @see src/FAdemo.php for this. Use self::USER_DATA_PATH instead of self::TEST_DATA_PATH
-        // TODO: Read whole array and step throw it comparing each username or email with the entry in $_POST
+        // TODO: Read whole array and step through it comparing each username or email with the entry in $_POST
         // TODO: with foreach or use in_array() combined with array_column() see PHP Documentation
         // TODO: Handle the special case, that the array is empty.
+        try {
+            $registeredUsers = $this->fileAccess->loadContents(self::USER_DATA_PATH);
+        } catch (FileAccessException $e) {
+            echo $e;
+        }
+
+        foreach ($registeredUsers as $user) {
+            if ($user[$field] == $value) {
+                return false;
+            }
+        }
 
         //##%%
         return true;
@@ -154,6 +198,21 @@ final class Register extends AbstractNormForm
         // TODO: use Utilities::sanitizeFilter for username, email is validated by isValid() with Regex, that doesn't
         // TODO: allow XSS
         // TODO: use password_hash() for the password
+        $newUser = [];
+        try {
+            $registeredUsers = $this->fileAccess->loadContents(self::USER_DATA_PATH);
+            $newUser["userid"] = $this->fileAccess->autoincrementID(self::USER_DATA_PATH, "userid");
+            $newUser["username"] = Utilities::sanitizeFilter($_POST[Register::USERNAME]);
+            $newUser["email"] = Utilities::sanitizeFilter($_POST[Register::EMAIL]);
+            $newUser["password"] = password_hash($_POST[Register::PASSWORD], PASSWORD_DEFAULT);
+
+            array_push($registeredUsers, $newUser);
+            if ($this->fileAccess->storeContents(self::USER_DATA_PATH, $registeredUsers) !== true) {
+                return false;
+            }
+        } catch (FileAccessException $e) {
+            echo $e;
+        }
 
         //##%%
         return true;
