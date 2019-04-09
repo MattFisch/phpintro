@@ -4,9 +4,10 @@ namespace Exercises;
 
 use Fhooe\NormForm\Core\AbstractNormForm;
 use Fhooe\NormForm\Parameter\GenericParameter;
-use Fhooe\NormForm\Parameter\PostParameter;
 use Fhooe\NormForm\View\View;
 use FileAccess\FileAccess;
+use FileAccess\FileAccessException;
+use phpDocumentor\Reflection\Types\String_;
 use Utilities\Utilities;
 
 /**
@@ -58,10 +59,8 @@ final class Login extends AbstractNormForm
      * which parameters (e.g. for form fields) are passed on to the template.
      * The constructor needs initialize the object for file handling.
      *
-     * @param View $defaultView The default View object with information on
-     *   what will be displayed.
-     * @param string $templateDir The Smarty template directory.
-     * @param string $compileDir The Smarty compiled template directory.
+     * @param View $defaultView   The default View object with information on
+     *                            what will be displayed.
      */
     public function __construct(View $defaultView)
     {
@@ -69,7 +68,7 @@ final class Login extends AbstractNormForm
 
         // TODO: Create the FileAccess object and assign it to $fileAccess;
         // TODO: @see src/FAdemo.php for this
-
+        $this->fileAccess = new FileAccess();
         //%%login/construct
     }
 
@@ -86,14 +85,26 @@ final class Login extends AbstractNormForm
     {
         // TODO: The code for correct form validation goes here. Check for empty fields and correct authentication.
         // TODO: @see src/FAdemo.php for this
+        if ($this->isEmptyPostField(self::USERNAME) || Utilities::isEmptyString($_POST[self::USERNAME])) {
+            $this->errorMessages[self::USERNAME] = "Username is empty.";
+        }
+        if ($this->isEmptyPostField(self::PASSWORD) || Utilities::isEmptyString($_POST[self::PASSWORD])) {
+            $this->errorMessages[self::PASSWORD] = "Password is empty.";
+        } elseif (!Utilities::isPassword($_POST[self::PASSWORD], 8, 12)) {
+            $this->errorMessages[Register::PASSWORD] = "Password is invalid (should be 8 to 12 characters long)";
+        }
+
+        //only check password if username and password are set and valid
+        if (count($this->errorMessages) === 0) {
+            if (!$this->authenticateUser()) {
+                $this->errorMessages[self::USERNAME] = "Invalid Username/Password combination.";
+            }
+        }
 
         //%%login/isValid
-        //##%%
-        $this->authenticateUser();
-        //#%#%
 
         $this->currentView->setParameter(new GenericParameter("errorMessages",
-          $this->errorMessages));
+            $this->errorMessages));
         return (count($this->errorMessages) === 0);
     }
 
@@ -105,7 +116,7 @@ final class Login extends AbstractNormForm
     protected function business(): void
     {
         // TODO: Save the username in $_SESSION. Replace John Doe with the username used to login
-        $_SESSION['username'] = "John Doe";
+        $_SESSION['username'] = $_POST[self::USERNAME];
         //%%login/business
         $_SESSION[IS_LOGGED_IN] = Utilities::generateLoginHash();
         // using the null coalesce operator
@@ -122,7 +133,6 @@ final class Login extends AbstractNormForm
      *
      * @return bool Returns true if the combination of username and password is
      *   valid, otherwise false.
-     * @throws \FileAccess\FileAccessException
      */
     private function authenticateUser(): bool
     {
@@ -130,25 +140,63 @@ final class Login extends AbstractNormForm
         // TODO: See src/FileAcess.php loadcontents and FAdemo.php for calling it
         // TODO: @see src/FAdemo.php for this
         // TODO: load whole file USER_DATA_PATH: user1 and user2 have password "geheim"
-        // TODO: Step throw the array with foreach
+        // TODO: Step through the array with foreach
         // TODO: Compare each username with the value in $_POST
         // TODO: Validate the password associated with the username with
         // TODO: PHP function password_verify() against the value in $_POST
         // TODO: return true or false, depending on result of verification
-
-        //##%%
-        return true;
-        //#%#%
-
         //%%login/authenticateUser
-        $users = $this->fileAccess->loadContents(self::USER_DATA_PATH);
+        try {
+            $users = $this->fileAccess->loadContents(self::USER_DATA_PATH);
+        } catch (FileAccessException $e) {
+            //file not found or locked
+            return false;
+        }
 
         foreach ($users as $user) {
-            if ($user[self::USERNAME] === $_POST[self::USERNAME] && password_verify($_POST[self::PASSWORD],
-                $user[self::PASSWORD])) {
-                return true;
+            if ($user[self::USERNAME] === $_POST[self::USERNAME]) {
+                //username found
+
+                $passwordValid = false;
+                //check hashing algo
+                if ($this->isBcrypt($user[self::PASSWORD])) {
+                    $passwordValid = password_verify($_POST[self::PASSWORD], $user[self::PASSWORD]);
+
+                    //when its a valid bcrypt password, the password should be updated to sha512
+                    if ($passwordValid) {
+                        $this->updateUserPasswordHash($user[self::USERNAME], $_POST[self::PASSWORD]);
+                    }
+                } else {
+                    //should be sha512
+                    $passwordValid = hash_equals($user[self::PASSWORD], $this->hashPasswordSHA512($_POST[self::PASSWORD]));
+                }
+
+                return $passwordValid;
             }
         }
+
+        //username not found
         return false;
+    }
+
+    private function updateUserPasswordHash(string $user, string $passwordPlaintext)
+    {
+        $users = $this->fileAccess->loadContents(self::USER_DATA_PATH);
+        for ($i = 0; $i < count($users); $i++) {
+            if ($users[$i][self::USERNAME] === $user) {
+                $users[$i][self::PASSWORD] = $this->hashPasswordSHA512($passwordPlaintext);
+            }
+        }
+        $this->fileAccess->storeContents(self::USER_DATA_PATH, $users);
+    }
+
+    private function hashPasswordSHA512(string $passwordPlaintext): string
+    {
+        return hash("sha512", $passwordPlaintext);
+    }
+
+    private function isBcrypt(string $passwordHash): bool
+    {
+        return strcmp(substr($passwordHash, 0, 4), "$2y$") === 0;
     }
 }

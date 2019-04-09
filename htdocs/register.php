@@ -22,10 +22,10 @@ try {
         "../templates",
         "../templates_c",
         [
-        new PostParameter(Exercises\Register::USERNAME),
-        new PostParameter(Exercises\Register::EMAIL),
-        new PostParameter(Exercises\Register::PASSWORD),
-        new PostParameter(Exercises\Register::PASSWORD_RETYPE)
+            new PostParameter(Exercises\Register::USERNAME),
+            new PostParameter(Exercises\Register::EMAIL),
+            new PostParameter(Exercises\Register::PASSWORD),
+            new PostParameter(Exercises\Register::PASSWORD_RETYPE),
         ]
     );
 
@@ -34,7 +34,7 @@ try {
     $register->normForm();
 } catch (Exception $e) {
     if (DEBUG) {
-        echo "An error occured in file " . $e->getFile() ." on line " . $e->getLine() .":" . $e->getMessage();
+        echo "An error occured in file " . $e->getFile() . " on line " . $e->getLine() . ":" . $e->getMessage();
     } else {
         echo "<h2>Something went wrong</h2>";
     }

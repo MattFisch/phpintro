@@ -13,8 +13,14 @@
   },
   {
     "userid": 3,
-    "username": "matthfisc",
-    "email": "mfhsicha@asfasf.at",
-    "password": "$2y$10$GGYPO5Tv2kmtndb3n0TjEeRScjbI13PN8jr6.BjEuNHIxQ/uG2PMO"
+    "username": "mfi",
+    "email": "mfischbacher@outlook.at",
+    "password": "08206bea342e75f82a25ad0e4094e08c993b963ee0b24cf1470670291d1037a324cab045e47ae78a4bb75da87edd34c5fe48cad97dce3db66b272802f564e547"
+  },
+  {
+    "userid": 4,
+    "username": "mfi2",
+    "email": "mfischbacher2@outlook.at",
+    "password": "08206bea342e75f82a25ad0e4094e08c993b963ee0b24cf1470670291d1037a324cab045e47ae78a4bb75da87edd34c5fe48cad97dce3db66b272802f564e547"
   }
 ]
