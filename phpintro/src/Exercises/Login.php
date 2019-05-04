@@ -7,7 +7,6 @@ use Fhooe\NormForm\Parameter\GenericParameter;
 use Fhooe\NormForm\View\View;
 use FileAccess\FileAccess;
 use FileAccess\FileAccessException;
-use phpDocumentor\Reflection\Types\String_;
 use Utilities\Utilities;
 
 /**
@@ -179,7 +178,7 @@ final class Login extends AbstractNormForm
         return false;
     }
 
-    private function updateUserPasswordHash(string $user, string $passwordPlaintext)
+    private function updateUserPasswordHash(string $user, string $passwordPlaintext): void
     {
         $users = $this->fileAccess->loadContents(self::USER_DATA_PATH);
         for ($i = 0; $i < count($users); $i++) {

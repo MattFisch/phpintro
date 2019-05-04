@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Resizer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css"
+          integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="Site">
+<header class="Site-header">
+    <div class="Header Header--small">
+        <div class="Header-titles">
+            <h1 class="Header-title"><i class="far fa-image"></i>Image Resizer</h1>
+            <p class="Header-subtitle">NormForm Edition</p>
+        </div>
+    </div>
+</header>
+<main class="Site-content">
+    <section class="Section">
+        <div class="Container">
+            <h2 class="Section-heading">Select an image and scale factor</h2>
+            {% if errorMessages is defined and errorMessages|length > 0 %}
+                <div class="Error">
+                    <ul class="Error-list">
+                        {% for error in errorMessages %}
+                            <li class="Error-listItem">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            {% if statusMessage is defined and statusMessage|length != 0 %}
+                <div class="Status">
+                    <p class="Status-message"><i class="fas fa-check"></i>{{ statusMessage }}</p>
+                </div>
+            {% endif %}
+            <form action="{{ _server.SCRIPT_NAME }}" method="POST" enctype="multipart/form-data">
+                <div class="Grid Grid--gutters">
+                    <input type="hidden" name="{{ maximumFileSize.getName() }}" value="2097152">
+                    <div class="InputCombo Grid-full">
+                        <label for="{{ selectedImage.getName() }}" class="InputCombo-label">Image*:</label>
+                        <input type="file" accept="image/*" id="{{ selectedImage.getName() }}"
+                               name="{{ selectedImage.getName() }}"
+                               value="{{ selectedImage.getValue() }}" class="InputCombo-field">
+                    </div>
+                    <div class="InputCombo Grid-full">
+                        <label for="{{ scaleFactor.getName() }}" class="InputCombo-label">Scale Factor (in %)*:</label>
+                        <input type="number" id="{{ scaleFactor.getName() }}" name="{{ scaleFactor.getName() }}"
+                               value="{{ scaleFactor.getValue() }}" class="InputCombo-field">
+                    </div>
+                    <div class="Grid-full">
+                        <button type="submit" value="upload" class="Button">Send</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+    <section class="Section">
+        <div class="Container">
+            <h2 class="Section-heading">Resized Image</h2>
+            {% if result is defined %}
+                <figure>
+                    <img src="{{ result.getFullPath() }}">
+                    <figcaption>{{ result.getName() }}</figcaption>
+                </figure>
+            {% endif %}
+        </div>
+    </section>
+</main>
+<footer class="Site-footer">
+    <div class="Footer Footer--small">
+        <p class="Footer-credits">Created and maintained by <a href="mailto:martin.harrer@fh-hagenberg.at">Martin
+                Harrer</a> and <a href="mailto:wolfgang.hochleitner@fh-hagenberg.at">Wolfgang Hochleitner</a>.</p>
+        <p class="Footer-version"><i class="far fa-file-alt"></i><a
+                    href="https://github.com/Digital-Media/normform-skeleton">NormForm-Skeleton Version 1.0.0</a></p>
+    </div>
+</footer>
+</body>
+</html>
