@@ -1,0 +1,33 @@
+<!-- TODO: DOCTYPE must be first line in html file -->
+<!DOCTYPE html>
+<html lang="en">
+<!-- TODO: head-Tag  -->
+<head>
+    <!-- TODO: charset definition + title  -->
+    <meta charset="UTF-8"/>
+    <title>First PHP</title>
+    <link href="https://font.vortech.io/MuseoSansRounded.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
+    <style>
+        input#input-email {
+            width : 150px;
+        }
+    </style>
+</head>
+<!-- TODO: html+body-Tag  -->
+<body>
+
+<!-- TODO: create a form tag -->
+<!-- TODO: method=post  -->
+<!-- TODO: action=ShowFormInput.php  -->
+<form action="ShowFormInput.php" method="post">
+    <!-- TODO: label  -->
+    <label for="input-email">e-mail</label>
+    <!-- TODO: create any kind of input field or a textarea field to send content to ShowFormInput.php -->
+    <input id="input-email" name="email" type="email">
+    <!-- TODO: create a submit Button.  -->
+    <button type="submit">Submit</button>
+</form>
+</body>
+</html>
+<!-- TODO: Complete the file ShowFormInput.php and return the $_POST-Array to the browser. -->
