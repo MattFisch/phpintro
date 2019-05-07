@@ -2,7 +2,7 @@
 
 require "../vendor/autoload.php";
 
-use NormFormSkeleton\NormFormDemo;
+use NormForm\LeaveANote;
 use Fhooe\NormForm\Parameter\PostParameter;
 use Fhooe\NormForm\View\View;
 
@@ -22,15 +22,15 @@ if (DEBUG) {
 }
 
 $view = new View(
-    "normFormDemo.html.twig",
+    "leaveANote.html.twig",
     "../templates",
     "../templates_c",
     [
-        new PostParameter(NormFormDemo::FIRST_NAME),
-        new PostParameter(NormFormDemo::LAST_NAME),
-        new PostParameter(NormFormDemo::MESSAGE),
+        new PostParameter(LeaveANote::FIRST_NAME),
+        new PostParameter(LeaveANote::LAST_NAME),
+        new PostParameter(LeaveANote::MESSAGE),
     ]
 );
 
-$form = new NormFormDemo($view);
+$form = new LeaveANote($view);
 $form->normForm();

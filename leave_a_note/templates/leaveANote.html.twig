@@ -62,25 +62,11 @@
     </section>
     <section class="Section">
         <div class="Container">
-            <h2 class="Section-heading">Result in $_POST</h2>
-            {% if result is defined %}
-                <table class="Table u-tableW100">
-                    <colgroup span="2" class="u-tableW50"></colgroup>
-                    <thead>
-                    <tr class="Table-row">
-                        <th class="Table-header">Key</th>
-                        <th class="Table-header">Value</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for key, value in result %}
-                        <tr class="Table-row">
-                            <td class="Table-data">{{ key }}</td>
-                            <td class="Table-data">{{ value | escape | nl2br }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+            <h2 class="Section-heading">The last note</h2>
+            {% if note is defined %}
+                <p><i>{{ note.getFirstName() }} {{ note.getLastName() }} wrote
+                        on {{ note.getTimestamp()|date('d.m.Y,H.i.s') }}:</i></p>
+                <p style="margin-left: 50px;"><b>{{ note.getMessage() }}</b></p>
             {% endif %}
         </div>
     </section>

@@ -1,13 +1,17 @@
 <?php
 
-namespace NormFormSkeleton;
+namespace NormForm;
 
+use DateTime;
+use DateTimeZone;
+use Exception;
 use Fhooe\NormForm\Core\AbstractNormForm;
 use Fhooe\NormForm\Parameter\GenericParameter;
 use Fhooe\NormForm\Parameter\PostParameter;
 use Fhooe\NormForm\View\View;
+use Note\Note;
 
-class NormFormDemo extends AbstractNormForm
+class LeaveANote extends AbstractNormForm
 {
 
     /** Form field constant that defines how the form field for holding a first name is called (id/name). */
@@ -19,12 +23,9 @@ class NormFormDemo extends AbstractNormForm
     /** Form field constant that defines how the form field for holding a message is called (id/name). */
     public const MESSAGE = "message";
 
-    /**
-     * Holds the results of the form submission (assigned in business()).
-     *
-     * @var array
-     */
-    private $result;
+    public const TIMEZONE = "Europe/Vienna";
+
+    private $note;
 
     /**
      * Constructor for creating a new object. Use this to perform initializations of properties you need throughout your
@@ -34,6 +35,11 @@ class NormFormDemo extends AbstractNormForm
     public function __construct(View $defaultView)
     {
         parent::__construct($defaultView);
+
+        if (Note::isNoteStored()) {
+            $this->note = Note::readNote();
+            $this->currentView->setParameter(new GenericParameter("note", $this->note));
+        }
     }
 
     /**
@@ -53,6 +59,9 @@ class NormFormDemo extends AbstractNormForm
         if ($this->isEmptyPostField(self::LAST_NAME)) {
             $this->errorMessages[self::LAST_NAME] = "Last name is required.";
         }
+        if ($this->isEmptyPostField(self::MESSAGE)) {
+            $this->errorMessages[self::LAST_NAME] = "Message is required.";
+        }
 
         $this->currentView->setParameter(new GenericParameter("errorMessages", $this->errorMessages));
 
@@ -66,8 +75,14 @@ class NormFormDemo extends AbstractNormForm
      */
     protected function business(): void
     {
-        $this->result = $_POST;
-        $this->currentView->setParameter(new GenericParameter("result", $this->result));
+        try {
+            $timestamp = new DateTime("now", new DateTimeZone(self::TIMEZONE));
+        } catch (Exception $e) {
+        }
+        $this->note = new Note($_POST[self::FIRST_NAME], $_POST[self::LAST_NAME], $_POST[self::MESSAGE], $timestamp);
+        $this->note->storeNote();
+
+        $this->currentView->setParameter(new GenericParameter("note", $this->note));
 
         $this->statusMessage = "Processing successful!";
         $this->currentView->setParameter(new GenericParameter("statusMessage", $this->statusMessage));
